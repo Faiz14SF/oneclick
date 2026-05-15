@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# List of DNS resolvers
+RESOLVERS=(
+    "dns1.serverfreak.biz"
+    "dns3.serverfreak.biz"
+    "dns8.serverfreak.biz"
+    "nb1.serverfreak.biz"
+    "ns1.serverfreak.biz"
+    "pdns1.serverfreak.biz"
+)
+
+# Prompt for hostname
+read -p "Enter hostname (e.g., faiz.my): " HOSTNAME
+
+# Prompt for DNS record type
+read -p "Enter DNS record type (e.g., A, TXT, MX, CNAME): " DNS_TYPE
+
+echo ""
+echo "========================================="
+echo "Testing $HOSTNAME for $DNS_TYPE records"
+echo "========================================="
+
+# Loop through each resolver and run dig
+for resolver in "${RESOLVERS[@]}"; do
+    echo -n "🔍 $resolver: "
+    result=$(dig @"$resolver" "$HOSTNAME" "$DNS_TYPE" +short 2>/dev/null)
+    if [ -z "$result" ]; then
+        echo "❌ No answer"
+    else
+        echo "$result" | head -1   # show first line only for brevity
+        # if you want all lines, remove | head -1
+    fi
+done
+
+echo "========================================="
